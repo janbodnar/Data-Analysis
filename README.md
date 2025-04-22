@@ -205,9 +205,13 @@ versus loading the entire log file into memory:
 ### Code Example:
 
 ```python
+import time
+import sys
+
 # Simulate a large log file
-with open('large_logs.txt', 'w') as f:
-    for i in range(1, 1_000_001):  # 1 million log entries
+log_file = 'large_logs.txt'
+with open(log_file, 'w') as f:
+    for i in range(1, 50_000_001):  # 50 million log entries
         status = 'ERROR' if i % 1000 == 0 else 'WARNING' if i % 100 == 0 else 'INFO'
         f.write(f"[{status}] Event {i}\n")
 
@@ -218,24 +222,46 @@ def get_warnings(file_path):
             if 'WARNING' in line:
                 yield line.strip()
 
-# Count warnings using the generator (efficient processing)
+# Efficient processing using generator
 start_gen = time.time()
-warning_count_gen = sum(1 for _ in get_warnings('large_logs.txt'))
+warnings_count_gen = sum(1 for _ in get_warnings(log_file))
 end_gen = time.time()
 
-# Process entire file into memory and filter (less efficient)
+# Measure memory used by generator
+def measure_generator_memory():
+    with open(log_file, 'r') as f:
+        generator = get_warnings(log_file)  # The generator itself
+        return sys.getsizeof(generator)
+
+generator_memory = measure_generator_memory()
+
+# Load the entire log file into memory and filter
 start_list = time.time()
-with open('large_logs.txt', 'r') as f:
+with open(log_file, 'r') as f:
     lines = f.readlines()  # Load all lines into memory
-    warning_count_list = sum(1 for line in lines if 'WARNING' in line)
+    warnings_count_list = sum(1 for line in lines if 'WARNING' in line)
 end_list = time.time()
 
-# Print results
-print(f"Number of warnings (generator): {warning_count_gen}")
-print(f"Time taken using generator: {end_gen - start_gen:.4f} seconds")
+# Measure memory used by list
+def measure_list_memory():
+    with open(log_file, 'r') as f:
+        lines = f.readlines()
+        return sys.getsizeof(lines)
 
-print(f"Number of warnings (list): {warning_count_list}")
+list_memory = measure_list_memory()
+
+# Print results
+print("Warning Counts:")
+print(f"Number of warnings using generator: {warnings_count_gen}")
+print(f"Number of warnings using list: {warnings_count_list}")
+
+print("\nTime Comparison:")
+print(f"Time taken using generator: {end_gen - start_gen:.4f} seconds")
 print(f"Time taken using list: {end_list - start_list:.4f} seconds")
+
+print("\nMemory Comparison:")
+print(f"Memory used by generator: {generator_memory} bytes")
+print(f"Memory used by list: {list_memory} bytes")
 ```
 
 ### Key Differences:
