@@ -32,13 +32,30 @@ def process_file_in_batches(file_path, batch_size=10000):
             total_sum += sum(batch)
     return total_sum
 
-# Benchmark batch processing
-start_time = time.time()
-total = process_file_in_batches(file_name)
-end_time = time.time()
+# Function to process the entire file without batching
+def process_file_without_batches(file_path):
+    with open(file_path, "r") as f:
+        numbers = [int(line.strip()) for line in f]  # Load all numbers into memory
+    return sum(numbers)
 
-print(f"Total sum of numbers: {total}")
-print(f"Time taken for batch processing: {end_time - start_time:.4f} seconds")
+# Benchmark batch processing
+start_batch = time.time()
+total_batch = process_file_in_batches(file_name)
+end_batch = time.time()
+
+# Benchmark non-batch processing
+start_non_batch = time.time()
+total_non_batch = process_file_without_batches(file_name)
+end_non_batch = time.time()
+
+# Print results
+print("Processing Results:")
+print(f"Total sum using batch processing: {total_batch}")
+print(f"Total sum using non-batch processing: {total_non_batch}")
+
+print("\nTime Comparison:")
+print(f"Time taken using batch processing: {end_batch - start_batch:.4f} seconds")
+print(f"Time taken using non-batch processing: {end_non_batch - start_non_batch:.4f} seconds")
 ```
 
 ### Key Details:
