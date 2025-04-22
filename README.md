@@ -59,7 +59,7 @@ import sys
 
 # Example using iterator to calculate sum of squares of even numbers
 def use_iterator_calculation():
-    numbers = iter(range(1, 10_000_001))  # Creating an iterator
+    numbers = range(1, 10_000_001)  # Creating an iterator
     return sum(x**2 for x in numbers if x % 2 == 0)
 
 # Example using list to calculate sum of squares of even numbers
@@ -69,7 +69,7 @@ def use_list_calculation():
 
 # Measure memory consumption
 def use_iterator_memory():
-    numbers = iter(range(1, 10_000_001))  # Create an iterator
+    numbers = range(1, 10_000_001)  # Create an iterator
     return sys.getsizeof(numbers)  # Measure memory usage of the iterator
 
 def use_list_memory():
