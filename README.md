@@ -5,6 +5,8 @@ More advanced data analysis
 Here’s an example demonstrating the efficiency of using iterators in Python, along with  
 a benchmark comparing iterators with list-based operations:  
 
+## Compare time
+
 ```python
 import time
 
