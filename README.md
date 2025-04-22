@@ -105,3 +105,95 @@ Using an iterator reduces memory consumption and is ideal for large-scale calcul
 storage overhead can be prohibitive. For tasks like financial modeling, scientific simulations,  
 or processing large data streams, this approach ensures efficiency and scalability.
 
+## Reading large CSV file
+
+Here’s an example of processing a very large CSV file efficiently in Python by comparing the use of an  
+**iterator** (via the `csv.reader`) with loading the entire file into memory using `csv.DictReader`.  
+We'll also look at the memory consumption and practicality of the two methods.
+
+### Code Example:
+
+```python
+import csv
+import time
+import sys
+
+# Create a large CSV file for testing (if it doesn't exist)
+file_name = "large_file.csv"
+rows = 10_000_000
+
+with open(file_name, "w", newline="") as file:
+    writer = csv.writer(file)
+    writer.writerow(["ID", "Name", "Age"])  # Header row
+    for i in range(1, rows + 1):
+        writer.writerow([i, f"Name{i}", i % 100])  # Example rows
+
+# Example using an iterator to process the CSV file row by row
+def use_iterator():
+    total_age = 0
+    with open(file_name, "r") as file:
+        reader = csv.reader(file)
+        next(reader)  # Skip the header
+        for row in reader:  # Iterator processes each row one at a time
+            total_age += int(row[2])  # Summing the "Age" column
+    return total_age
+
+# Example loading the entire CSV file into memory
+def use_list():
+    total_age = 0
+    with open(file_name, "r") as file:
+        reader = list(csv.DictReader(file))  # Load all rows into memory
+        for row in reader:
+            total_age += int(row["Age"])  # Summing the "Age" column
+    return total_age
+
+# Measure memory usage
+def get_iterator_memory():
+    with open(file_name, "r") as file:
+        reader = csv.reader(file)  # File object acts as an iterator
+        return sys.getsizeof(reader)
+
+def get_list_memory():
+    with open(file_name, "r") as file:
+        reader = list(csv.DictReader(file))  # Load all rows into memory
+        return sys.getsizeof(reader)
+
+# Benchmark calculations
+start_iterator = time.time()
+result_iterator = use_iterator()
+end_iterator = time.time()
+
+start_list = time.time()
+result_list = use_list()
+end_list = time.time()
+
+# Measure memory consumption
+iterator_memory = get_iterator_memory()
+list_memory = get_list_memory()
+
+# Print results and timings
+print(f"Total age sum using iterator: {result_iterator}")
+print(f"Time taken using iterator: {end_iterator - start_iterator:.4f} seconds")
+print(f"Memory used by iterator: {iterator_memory} bytes")
+
+print(f"Total age sum using list: {result_list}")
+print(f"Time taken using list: {end_list - start_list:.4f} seconds")
+print(f"Memory used by list: {list_memory} bytes")
+```
+
+### Key Details:
+1. **Iterator (`csv.reader`)**:
+   - Reads the file row by row, processing each line individually without storing the entire file in memory.
+   - Significantly lower memory consumption and ideal for handling large files.
+
+2. **List (`list(csv.DictReader)`)**:
+   - Loads the entire CSV file into memory at once.
+   - While convenient for small to medium-sized files, it consumes considerable memory for very large datasets and can cause performance bottlenecks or memory errors.
+
+### Practical Application:
+This example demonstrates how an iterator is well-suited for operations like aggregations or  
+row-by-row transformations on massive datasets. It's particularly useful for processing logs, financial 
+records, or other large-scale structured data files efficiently.
+
+Let me know if you'd like to dive deeper into file processing or optimization techniques! 🚀
+
