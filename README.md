@@ -188,12 +188,69 @@ print(f"Memory used by list: {list_memory} bytes")
 
 2. **List (`list(csv.DictReader)`)**:
    - Loads the entire CSV file into memory at once.
-   - While convenient for small to medium-sized files, it consumes considerable memory for very large datasets and can cause performance bottlenecks or memory errors.
+   - While convenient for small to medium-sized files, it consumes considerable memory for very large
+     datasets and can cause performance bottlenecks or memory errors.
 
 ### Practical Application:
 This example demonstrates how an iterator is well-suited for operations like aggregations or  
 row-by-row transformations on massive datasets. It's particularly useful for processing logs, financial 
 records, or other large-scale structured data files efficiently.
 
-Let me know if you'd like to dive deeper into file processing or optimization techniques! 🚀
+## Large log file
+
+Here’s a similar example that reads a large log file and filters lines based on a different condition  
+(e.g., "WARNING" messages). This version also compares the use of a generator for efficient processing  
+versus loading the entire log file into memory:
+
+### Code Example:
+
+```python
+# Simulate a large log file
+with open('large_logs.txt', 'w') as f:
+    for i in range(1, 1_000_001):  # 1 million log entries
+        status = 'ERROR' if i % 1000 == 0 else 'WARNING' if i % 100 == 0 else 'INFO'
+        f.write(f"[{status}] Event {i}\n")
+
+# Generator to yield warning lines efficiently
+def get_warnings(file_path):
+    with open(file_path, 'r') as f:
+        for line in f:
+            if 'WARNING' in line:
+                yield line.strip()
+
+# Count warnings using the generator (efficient processing)
+start_gen = time.time()
+warning_count_gen = sum(1 for _ in get_warnings('large_logs.txt'))
+end_gen = time.time()
+
+# Process entire file into memory and filter (less efficient)
+start_list = time.time()
+with open('large_logs.txt', 'r') as f:
+    lines = f.readlines()  # Load all lines into memory
+    warning_count_list = sum(1 for line in lines if 'WARNING' in line)
+end_list = time.time()
+
+# Print results
+print(f"Number of warnings (generator): {warning_count_gen}")
+print(f"Time taken using generator: {end_gen - start_gen:.4f} seconds")
+
+print(f"Number of warnings (list): {warning_count_list}")
+print(f"Time taken using list: {end_list - start_list:.4f} seconds")
+```
+
+### Key Differences:
+1. **Generator**:
+   - Processes the log file line by line, avoiding the need to store the entire file in memory.
+   - Particularly useful for very large log files where memory resources are limited.
+
+2. **List**:
+   - Loads all lines of the log file into memory at once using `readlines()`.
+   - Inefficient for large files due to high memory consumption.
+
+### Practical Application:
+This example demonstrates how a generator is ideal for efficiently processing large log files.  
+It ensures scalability and optimal performance by reading only one line at a time. The comparison  
+highlights why generators are preferred for tasks involving massive datasets or streamed data.
+
+
 
