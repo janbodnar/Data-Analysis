@@ -50,42 +50,56 @@ perform better for large data sizes.
 
 ## Memory consumption
 
-E xample comparing the memory consumption of an iterator versus a list in Python  
-when handling large datasets:
+Here's a modified and more practical example that calculates the sum of squares of even numbers within a large range using both an iterator and a list, comparing their memory consumption and showcasing the utility of iterators:
 
 ```python
 import sys
 
-# Example using iterators
-def use_iterator_memory():
-    numbers = iter(range(10_000_000))  # Create an iterator for a large range
-    return sys.getsizeof(numbers)  # Measure memory usage of the iterator
+# Example using iterator to calculate sum of squares of even numbers
+def use_iterator_calculation():
+    numbers = iter(range(1, 10_000_001))  # Creating an iterator
+    return sum(x**2 for x in numbers if x % 2 == 0)
 
-# Example using lists
-def use_list_memory():
-    numbers = list(range(10_000_000))  # Create a list for the same range
-    return sys.getsizeof(numbers)  # Measure memory usage of the list
+# Example using list to calculate sum of squares of even numbers
+def use_list_calculation():
+    numbers = list(range(1, 10_000_001))  # Creating a list
+    return sum(x**2 for x in numbers if x % 2 == 0)
 
 # Measure memory consumption
+def use_iterator_memory():
+    numbers = iter(range(1, 10_000_001))  # Create an iterator
+    return sys.getsizeof(numbers)  # Measure memory usage of the iterator
+
+def use_list_memory():
+    numbers = list(range(1, 10_000_001))  # Create a list
+    return sys.getsizeof(numbers)  # Measure memory usage of the list
+
+# Perform calculation and measure memory
+iterator_result = use_iterator_calculation()
 iterator_memory = use_iterator_memory()
+
+list_result = use_list_calculation()
 list_memory = use_list_memory()
 
-# Print results
+# Print results and memory usage
+print(f"Sum of squares using iterator: {iterator_result}")
 print(f"Memory used by iterator: {iterator_memory} bytes")
+
+print(f"Sum of squares using list: {list_result}")
 print(f"Memory used by list: {list_memory} bytes")
 ```
 
-### Explanation:
-- **Iterator**: An iterator computes each value on-the-fly and does not store the  
-  entire range in memory, resulting in significantly lower memory consumption.  
-- **List**: A list stores all the numbers in memory, consuming much more space,  
-  especially for large datasets.  
+### Key Differences:
+1. **Calculation**:
+   - Both iterator and list examples compute the sum of squares of even numbers within the range.
+   - This is a practical computation often used in numerical analysis or mathematical modeling.
 
-### Expected Outcome:
-The iterator's memory usage will be minimal, reflecting the small overhead required to   
-create the iterator object itself. In contrast, the list will consume a large amount of   
-memory proportional to the size of the dataset.  
+2. **Memory Consumption**:
+   - The iterator consumes significantly less memory since it generates numbers on-the-fly without storing the entire range.
+   - The list requires substantially more memory to store all numbers upfront.
 
-This example demonstrates the efficiency of iterators when working with large data, making  
-them ideal for scenarios where memory usage is a concern.  
+### Why This Is Practical:
+Using an iterator reduces memory consumption and is ideal for large-scale calculations where  
+storage overhead can be prohibitive. For tasks like financial modeling, scientific simulations,  
+or processing large data streams, this approach ensures efficiency and scalability.
 
