@@ -50,7 +50,9 @@ perform better for large data sizes.
 
 ## Memory consumption
 
-Here's a modified and more practical example that calculates the sum of squares of even numbers within a large range using both an iterator and a list, comparing their memory consumption and showcasing the utility of iterators:
+Here's a modified and more practical example that calculates the sum of squares of  
+even numbers within a large range using both an iterator and a list, comparing their memory  
+consumption and showcasing the utility of iterators:
 
 ```python
 import sys
