@@ -48,8 +48,10 @@ The iterator-based approach is typically faster and more memory-efficient becaus
 of list creation. The exact timings may vary depending on your machine, but the iterator will generally   
 perform better for large data sizes.
 
+## Memory consumption
 
-Here's an example comparing the memory consumption of an iterator versus a list in Python when handling large datasets:
+E xample comparing the memory consumption of an iterator versus a list in Python  
+when handling large datasets:
 
 ```python
 import sys
