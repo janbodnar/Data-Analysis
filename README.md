@@ -45,3 +45,43 @@ print(f"Time taken using list: {end_list - start_list:.4f} seconds")
 The iterator-based approach is typically faster and more memory-efficient because it avoids the overhead   
 of list creation. The exact timings may vary depending on your machine, but the iterator will generally   
 perform better for large data sizes.
+
+
+Here's an example comparing the memory consumption of an iterator versus a list in Python when handling large datasets:
+
+```python
+import sys
+
+# Example using iterators
+def use_iterator_memory():
+    numbers = iter(range(10_000_000))  # Create an iterator for a large range
+    return sys.getsizeof(numbers)  # Measure memory usage of the iterator
+
+# Example using lists
+def use_list_memory():
+    numbers = list(range(10_000_000))  # Create a list for the same range
+    return sys.getsizeof(numbers)  # Measure memory usage of the list
+
+# Measure memory consumption
+iterator_memory = use_iterator_memory()
+list_memory = use_list_memory()
+
+# Print results
+print(f"Memory used by iterator: {iterator_memory} bytes")
+print(f"Memory used by list: {list_memory} bytes")
+```
+
+### Explanation:
+- **Iterator**: An iterator computes each value on-the-fly and does not store the  
+  entire range in memory, resulting in significantly lower memory consumption.  
+- **List**: A list stores all the numbers in memory, consuming much more space,  
+  especially for large datasets.  
+
+### Expected Outcome:
+The iterator's memory usage will be minimal, reflecting the small overhead required to   
+create the iterator object itself. In contrast, the list will consume a large amount of   
+memory proportional to the size of the dataset.  
+
+This example demonstrates the efficiency of iterators when working with large data, making  
+them ideal for scenarios where memory usage is a concern.  
+
