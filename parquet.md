@@ -22,8 +22,11 @@ Key features include:
 
 It’s a core dependency for many data processing tasks in Python, especially when performance and  
 scalability are critical.
-```markdown
-Below are a few examples demonstrating how to work with PyArrow in Python, focusing on creating, manipulating, and reading/writing data in Apache Arrow and Parquet formats. These examples assume you have PyArrow installed (`pip install pyarrow`).
+
+Below are a few examples demonstrating how to work with PyArrow in Python, focusing on creating, manipulating,  
+and reading/writing data in Apache Arrow and Parquet formats.  
+
+These examples assume you have PyArrow installed (`pip install pyarrow`).
 
 ```python
 import pyarrow as pa
