@@ -1,9 +1,9 @@
-Below is a comprehensive tutorial designed for your lecture on Docker for Python programmers. It covers the essentials of Docker, how to containerize Python applications, and best practices, tailored for Python developers. The tutorial is structured as a markdown document for easy presentation and includes practical examples.
+Below is an updated version of the Docker tutorial for Python programmers, modified to introduce simple Python programs before diving into more complex examples like the Flask app. The tutorial now starts with basic Python scripts to ease beginners into Docker, then progresses to the Flask app and other advanced topics. The structure remains the same, with only the relevant sections updated to include these simpler examples.
 
 
 # Docker Tutorial for Python Programmers
 
-This tutorial is designed for Python programmers who want to learn how to use Docker to containerize their applications. We'll cover the basics of Docker, how to create Docker images for Python apps, and best practices to ensure efficient and secure deployments.
+This tutorial is designed for Python programmers who want to learn how to use Docker to containerize their applications. We'll start with simple Python scripts, then move to more complex applications, covering Docker basics, containerization, and best practices.
 
 ## 1. Introduction to Docker
 
@@ -41,11 +41,99 @@ docker ps               # List running containers
 docker stop <container_id>  # Stop a container
 ```
 
-## 4. Containerizing a Simple Python Application
+## 4. Containerizing Simple Python Programs
 
-Let’s create a Python app and containerize it using Docker.
+Let’s start by containerizing two simple Python programs to understand Docker basics.
 
-### Step 1: Create a Python App
+### Example 1: Hello World Script
+
+Create a directory `hello-python` with the following file:
+
+**hello.py**
+```python
+print("Hello, Docker from Python!")
+```
+
+**Dockerfile**
+```dockerfile
+# Use official Python 3.9 slim image
+FROM python:3.9-slim
+
+# Set working directory
+WORKDIR /app
+
+# Copy the script
+COPY hello.py .
+
+# Command to run the script
+CMD ["python", "hello.py"]
+```
+
+**Build and Run**:
+```bash
+# Build the image
+docker build -t hello-python .
+
+# Run the container
+docker run hello-python
+```
+
+**Expected Output**:
+```
+Hello, Docker from Python!
+```
+
+### Example 2: Simple Calculator Script
+
+Now, let’s containerize a script that performs basic calculations.
+
+Create a directory `calc-python` with the following files:
+
+**calculator.py**
+```python
+def add(a, b):
+    return a + b
+
+result = add(5, 3)
+print(f"5 + 3 = {result}")
+```
+
+**Dockerfile**
+```dockerfile
+# Use official Python 3.9 slim image
+FROM python:3.9-slim
+
+# Set working directory
+WORKDIR /app
+
+# Copy the script
+COPY calculator.py .
+
+# Command to run the script
+CMD ["python", "calculator.py"]
+```
+
+**Build and Run**:
+```bash
+# Build the image
+docker build -t calc-python .
+
+# Run the container
+docker run calc-python
+```
+
+**Expected Output**:
+```
+5 + 3 = 8
+```
+
+These examples demonstrate how to containerize basic Python scripts with minimal setup.
+
+## 5. Containerizing a Python Web Application
+
+Now, let’s move to a more complex example: a Flask web application.
+
+### Step 1: Create a Flask App
 Create a directory `my-python-app` with the following files:
 
 **app.py**
@@ -68,13 +156,11 @@ flask==2.0.1
 ```
 
 ### Step 2: Create a Dockerfile
-In the same directory, create a `Dockerfile`:
-
 ```dockerfile
 # Use official Python 3.9 image as base
 FROM python:3.9-slim
 
-# Set working directory inside the container
+# Set working directory
 WORKDIR /app
 
 # Copy requirements file and install dependencies
@@ -84,14 +170,14 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the application code
 COPY app.py .
 
-# Expose port 5000 for the Flask app
+# Expose port 5000
 EXPOSE 5000
 
 # Command to run the app
 CMD ["python", "app.py"]
 ```
 
-### Step 3: Build and Run the Docker Image
+### Step 3: Build and Run
 ```bash
 # Build the image
 docker build -t my-python-app .
@@ -102,20 +188,20 @@ docker run -p 5000:5000 my-python-app
 
 Visit `http://localhost:5000` in your browser to see the app running.
 
-## 5. Best Practices for Python Docker Images
+## 6. Best Practices for Python Docker Images
 
 ### Use Lightweight Base Images
 - Use `python:3.9-slim` instead of `python:3.9` to reduce image size.
-- For even smaller images, consider `python:3.9-alpine` (but note potential compatibility issues with some packages).
+- For even smaller images, consider `python:3.9-alpine` (but note potential compatibility issues).
 
 ### Minimize Layers
-- Combine commands in the Dockerfile to reduce layers:
+- Combine commands to reduce layers:
 ```dockerfile
 RUN pip install --no-cache-dir -r requirements.txt && rm -rf /root/.cache
 ```
 
 ### Use .dockerignore
-Create a `.dockerignore` file to exclude unnecessary files (e.g., `.git`, `__pycache__`):
+Create a `.dockerignore` file:
 ```
 .git
 __pycache__
@@ -124,21 +210,20 @@ __pycache__
 ```
 
 ### Pin Dependencies
-In `requirements.txt`, specify exact versions to avoid unexpected updates:
+In `requirements.txt`, specify exact versions:
 ```
 flask==2.0.1
 werkzeug==2.0.1
 ```
 
 ### Run as Non-Root User
-For security, run the container as a non-root user:
 ```dockerfile
 # Create a non-root user
 RUN useradd -m myuser
 USER myuser
 ```
 
-## 6. Working with Docker Compose
+## 7. Working with Docker Compose
 
 For multi-container apps (e.g., Python app + database), use Docker Compose.
 
@@ -167,14 +252,14 @@ Run the stack:
 docker-compose up
 ```
 
-## 7. Debugging and Troubleshooting
+## 8. Debugging and Troubleshooting
 
 - **View Logs**: `docker logs <container_id>`
-- **Access Container Shell**: `docker exec -it <container_id> bash`
-- **Check Resource Usage**: `docker stats`
-- **Image Size Issues**: Use `docker images` to identify large images and optimize your Dockerfile.
+- **Access Shell**: `docker exec -it <container_id> bash`
+- **Check Resources**: `docker stats`
+- **Image Size**: Use `docker images` to optimize large images.
 
-## 8. Deploying to Production
+## 9. Deploying to Production
 
 - **Push to Docker Hub**:
 ```bash
@@ -183,20 +268,20 @@ docker push username/my-python-app:latest
 ```
 
 - **Use Cloud Platforms**: Deploy to AWS ECS, Google Cloud Run, or Kubernetes.
-- **Environment Variables**: Pass sensitive data (e.g., API keys) via environment variables:
+- **Environment Variables**:
 ```bash
 docker run -e API_KEY=your_key -p 5000:5000 my-python-app
 ```
 
-## 9. Exercise for Attendees
+## 10. Exercise for Attendees
 
 **Task**: Containerize a Python script that fetches data from an API and saves it to a file.
 
-1. Create a Python script using `requests` to fetch data from `https://jsonplaceholder.typicode.com/posts`.
-2. Write a Dockerfile to containerize the script.
-3. Build and run the container, ensuring the output file is accessible.
+1. Create a script using `requests` to fetch data from `https://jsonplaceholder.typicode.com/posts`.
+2. Write a Dockerfile to containerize it.
+3. Build and run, ensuring the output file is accessible.
 
-**Solution** (for reference):
+**Solution**:
 
 **fetch_data.py**
 ```python
@@ -229,9 +314,9 @@ docker build -t fetch-data .
 docker run -v $(pwd)/output:/app/output fetch-data
 ```
 
-The output will be saved to `output/output.json` on the host.
+The output will be saved to `output/output.json`.
 
-## 10. Additional Resources
+## 11. Additional Resources
 - [Docker Documentation](https://docs.docker.com)
 - [Docker Hub Python Images](https://hub.docker.com/_/python)
 - [Docker Compose Reference](https://docs.docker.com/compose)
@@ -239,4 +324,4 @@ The output will be saved to `output/output.json` on the host.
 
 ---
 
-This tutorial provides a hands-on introduction to Docker for Python programmers. Encourage attendees to experiment with the examples and ask questions during the lecture!
+This tutorial starts with simple Python programs to build confidence before tackling complex applications. Encourage attendees to try the examples and ask questions!
