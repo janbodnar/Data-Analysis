@@ -41,33 +41,39 @@ Let's see how the GIL affects performance with CPU-bound tasks:
 ```python
 import time
 import threading
+import requests
 
-def count_down(n):
-    while n > 0:
-        n -= 1
+def download_site(url):
+    response = requests.get(url)
+    print(f"Read {len(response.content)} bytes from {url}")
 
 # Single-threaded
 start = time.time()
-count_down(100000000)
-count_down(100000000)
+for _ in range(5):
+    url = "https://www.example.com"
+    download_site(url)
 print("Single-threaded:", time.time() - start)
 
 # Multi-threaded
 start = time.time()
-t1 = threading.Thread(target=count_down, args=(100000000,))
-t2 = threading.Thread(target=count_down, args=(100000000,))
-t1.start()
-t2.start()
-t1.join()
-t2.join()
+threads = []
+url = "https://www.example.com"
+for _ in range(5):
+    t = threading.Thread(target=download_site, args=(url,))
+    t.start()
+    threads.append(t)
+for t in threads:
+    t.join()
 print("Multi-threaded:", time.time() - start)
 ```
 
-You'll likely find that the multi-threaded version takes about the same time or even longer than the single-threaded version due to the GIL.
+You'll likely find that the multi-threaded version takes about the same time or even longer than the  
+single-threaded version due to the GIL.
 
 ## When the GIL Doesn't Matter
 
-The GIL primarily affects CPU-bound tasks. For I/O-bound tasks (network operations, file I/O, etc.), threads can still provide significant performance improvements because the GIL is released during I/O operations.
+The GIL primarily affects CPU-bound tasks. For I/O-bound tasks (network operations, file I/O, etc.),  
+threads can still provide significant performance improvements because the GIL is released during I/O operations.  
 
 ```python
 import time
@@ -96,13 +102,15 @@ for t in threads:
 print("Multi-threaded:", time.time() - start)
 ```
 
-Here, the multi-threaded version will likely be faster because the threads spend most of their time waiting for I/O, during which the GIL is released.
+Here, the multi-threaded version will likely be faster because the threads spend most of their 
+time waiting for I/O, during which the GIL is released.
 
 ## Working Around the GIL
 
 If you need true parallelism for CPU-bound tasks, consider these approaches:
 
-1. **Multiprocessing**: The `multiprocessing` module creates separate Python processes, each with its own GIL.
+1. **Multiprocessing**: The `multiprocessing` module creates separate Python processes,
+2.  each with its own GIL.
 
 ```python
 from multiprocessing import Pool
@@ -118,9 +126,7 @@ if __name__ == '__main__':
 ```
 
 2. **C Extensions**: Write performance-critical code in C and release the GIL when appropriate using the Python C API.
-
 3. **Alternative Python Implementations**: Use Jython or IronPython (no GIL) or PyPy (has a GIL but can be more efficient).
-
 4. **Async I/O**: For I/O-bound tasks, `asyncio` can be more efficient than threads.
 
 ## GIL in Python 3
@@ -141,6 +147,9 @@ However, the fundamental limitation remains for CPU-bound tasks.
 
 ## Conclusion
 
-The GIL is a fundamental part of CPython that makes the implementation simpler but limits thread performance for CPU-bound tasks. Understanding how it works helps you write more efficient Python programs by choosing the right concurrency model for your specific use case.
+The GIL is a fundamental part of CPython that makes the implementation simpler but limits thread performance  
+for CPU-bound tasks. Understanding how it works helps you write more efficient Python programs by choosing the  
+right concurrency model for your specific use case.
 
-While the GIL may seem like a limitation, in practice many Python applications are I/O-bound where the GIL isn't a significant factor. For CPU-bound workloads, Python provides effective alternatives like multiprocessing.
+While the GIL may seem like a limitation, in practice many Python applications are I/O-bound where the GIL  
+isn't a significant factor. For CPU-bound workloads, Python provides effective alternatives like multiprocessing.
