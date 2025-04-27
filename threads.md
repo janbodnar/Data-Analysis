@@ -34,6 +34,23 @@ thread.start()
 thread.join()
 ```
 
+Example with thread IDs:
+
+```python
+import threading
+
+def print_numbers():
+    # Get the current thread ID
+    thread_id = threading.get_ident()
+    for i in range(5):
+        print(f"Thread ID: {thread_id}, Number: {i}")
+
+# Create and start the thread
+thread = threading.Thread(target=print_numbers)
+thread.start()
+thread.join()
+```
+
 ## Important Notes
 - **GIL Limitation**: Python’s GIL allows only one thread to execute Python bytecode at a time, limiting parallelism for CPU-bound tasks.
 - **Thread Safety**: Use locks to protect shared resources.
