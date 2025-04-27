@@ -338,7 +338,62 @@ for t in threads:
 print("All downloads complete")
 ```
 
----
+## Example 11: Queue
+
+```python
+import threading
+import time
+
+# Function to simulate work
+def simulate_work(task_id):
+    thread_id = threading.get_ident()
+    print(f"Thread ID: {thread_id}, Task ID: {task_id} started.")
+    time.sleep(5)  # Simulate work with 5-second sleep
+    print(f"Thread ID: {thread_id}, Task ID: {task_id} completed.")
+
+# List of 20 tasks
+tasks = list(range(1, 21))
+
+# Worker function to process tasks
+def worker(task_queue):
+    while not task_queue.empty():
+        try:
+            task_id = task_queue.get_nowait()  # Get next task from the queue
+            simulate_work(task_id)
+        except Exception as e:
+            pass  # Handle empty queue case gracefully
+
+# Main function to manage threads
+def main():
+    from queue import Queue
+
+    # Create a queue for the tasks
+    task_queue = Queue()
+    for task in tasks:
+        task_queue.put(task)
+
+    # Start timing
+    start_time = time.time()
+
+    # Create and start 5 threads
+    threads = []
+    for i in range(5):
+        thread = threading.Thread(target=worker, args=(task_queue,))
+        threads.append(thread)
+        thread.start()
+
+    # Wait for all threads to complete
+    for thread in threads:
+        thread.join()
+
+    # End timing
+    end_time = time.time()
+    print(f"All tasks completed in {end_time - start_time:.2f} seconds.")
+
+# Run the program
+if __name__ == "__main__":
+    main()
+```
 
 ## Best Practices
 - Use locks to manage shared resources.  
