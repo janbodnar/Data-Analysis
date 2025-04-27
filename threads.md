@@ -65,14 +65,17 @@ Run two threads that print different messages.
 
 ```python
 import threading
+import time
 
 def print_hello():
+    time.sleep(5)
     for _ in range(3):
-        print("Hello from thread!")
+        print("Hello from thread 1")
 
 def print_world():
+    time.sleep(3)
     for _ in range(3):
-        print("World from thread!")
+        print("Hello from thread 2")
 
 t1 = threading.Thread(target=print_hello)
 t2 = threading.Thread(target=print_world)
@@ -83,6 +86,12 @@ t2.start()
 t1.join()
 t2.join()
 ```
+
+The `join()` method in Python's threading module is used to make the main thread  
+(or the thread that calls join) wait for the completion of another thread.  
+The `join()` method ensures the program waits for both threads to complete their  
+tasks before terminating.
+
 
 ### Example 2: Thread with Arguments
 Pass arguments to a thread function.
