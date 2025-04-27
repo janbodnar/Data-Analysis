@@ -161,26 +161,87 @@ t2.start()
 t2.join()
 ```
 
-### Example 6: Daemon Threads
-Run a background thread that exits when the main program ends.
+### Example 6: TKinter long running task
+
+Run a long running task with and without a thread. 
 
 ```python
-import threading
+import tkinter as tk
+from tkinter import messagebox
 import time
+import threading
 
-def background_task():
-    while True:
-        print("Background task running...")
-        time.sleep(1)
+# Example 1: Long-Running Task in Main Thread (GUI Freezes)
+def example_without_thread():
+    root = tk.Tk()
+    root.title("Tkinter Without Thread")
+    root.geometry("300x150")
 
-t = threading.Thread(target=background_task, daemon=True)
-t.start()
+    def long_running_task():
+        status_label.config(text="Task Running...")
+        root.update()  # Force update to show status
+        for i in range(5):
+            time.sleep(3)  # Simulate long task
+            status_label.config(text=f"Processing {i+1}/5")
+            root.update()
+        status_label.config(text="Task Completed!")
+        messagebox.showinfo("Done", "Task finished!")
 
-time.sleep(3)
-print("Main program exiting")
+    def start_task():
+        start_button.config(state="disabled")
+        long_running_task()
+        start_button.config(state="normal")
+
+    start_button = tk.Button(root, text="Start Task", command=start_task)
+    start_button.pack(pady=20)
+
+    status_label = tk.Label(root, text="Ready")
+    status_label.pack(pady=10)
+
+    tk.Label(root, text="Note: GUI freezes during task").pack(pady=10)
+
+    root.mainloop()
+
+# Example 2: Long-Running Task in Separate Thread (GUI Responsive)
+def example_with_thread():
+    root = tk.Tk()
+    root.title("Tkinter With Thread")
+    root.geometry("300x150")
+
+    def long_running_task():
+        for i in range(5):
+            time.sleep(3)  # Simulate long task
+            status_label.config(text=f"Processing {i+1}/5")
+        status_label.config(text="Task Completed!")
+        start_button.config(state="normal")
+        messagebox.showinfo("Done", "Task finished!")
+
+    def start_task():
+        start_button.config(state="disabled")
+        status_label.config(text="Task Running...")
+        thread = threading.Thread(target=long_running_task)
+        thread.start()
+
+    start_button = tk.Button(root, text="Start Task", command=start_task)
+    start_button.pack(pady=20)
+
+    status_label = tk.Label(root, text="Ready")
+    status_label.pack(pady=10)
+
+    tk.Label(root, text="Note: GUI remains responsive").pack(pady=10)
+
+    root.mainloop()
+
+# Run both examples (one at a time)
+if __name__ == "__main__":
+    print("Running Example 1 (Without Thread)...")
+    example_without_thread()
+    print("Running Example 2 (With Thread)...")
+    example_with_thread()
 ```
 
 ### Example 7: Thread Pool
+
 Use `ThreadPoolExecutor` for managing multiple threads.
 
 ```python
@@ -199,6 +260,7 @@ print(list(results))
 ```
 
 ### Example 8: Timed Thread Execution
+
 Run a thread for a specific duration.
 
 ```python
@@ -235,6 +297,7 @@ t.join()
 ```
 
 ### Example 10: Simulating I/O-Bound Task
+
 Simulate downloading files concurrently.
 
 ```python
