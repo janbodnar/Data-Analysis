@@ -1,5 +1,87 @@
 # Priklady
 
+## read with Go
+
+```go
+package main
+
+import (
+	"encoding/csv"
+	"fmt"
+	"os"
+	"strconv"
+)
+
+func main() {
+	// Open the CSV file
+	file, err := os.Open("fake_data_with_salary.csv")
+	if err != nil {
+		fmt.Printf("Error opening file: %v\n", err)
+		return
+	}
+	defer file.Close()
+
+	// Create a CSV reader
+	reader := csv.NewReader(file)
+	records, err := reader.ReadAll()
+	if err != nil {
+		fmt.Printf("Error reading CSV: %v\n", err)
+		return
+	}
+
+	// Initialize sum
+	var totalSalary float64
+
+	// Skip header and sum salaries
+	for i, record := range records {
+		if i == 0 {
+			continue // Skip header row
+		}
+		salary, err := strconv.ParseFloat(record[3], 64)
+		if err != nil {
+			fmt.Printf("Error parsing salary in row %d: %v\n", i+1, err)
+			continue
+		}
+		totalSalary += salary
+	}
+
+	// Print the result
+	fmt.Printf("Total sum of all salaries: %.0f\n", totalSalary)
+}
+```
+
+
+## read pandas
+
+```python
+import pandas as pd
+
+# Read the CSV file using Pandas
+df = pd.read_csv('fake_data_with_salary.csv')
+
+# Compute the sum of the Salary column
+total_salary = df['Salary'].sum()
+
+# Print the result
+print(f"Total sum of all salaries: {total_salary}")
+```
+
+
+## read dusk
+
+```python
+import dask.dataframe as dd
+
+# Read the CSV file using Dask
+df = dd.read_csv('fake_data_with_salary.csv')
+
+# Compute the sum of the Salary column
+total_salary = df['Salary'].sum().compute()
+
+# Print the result
+print(f"Total sum of all salaries: {total_salary}")
+```
+
 
 
 ```go
