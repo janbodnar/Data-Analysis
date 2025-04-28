@@ -8,20 +8,27 @@ package main
 import (
 	"encoding/csv"
 	"fmt"
+	"math/rand"
 	"os"
+	"time"
+
 	"github.com/bxcodec/faker/v3"
 )
 
 // User structure to define fake user data
 type User struct {
-	Name  string `faker:"name"`
-	Email string `faker:"email"`
-	Phone string `faker:"phone_number"`
+	Name   string `faker:"name"`
+	Email  string `faker:"email"`
+	Phone  string `faker:"phone_number"`
+	Salary int    // Salary will be generated manually
 }
 
 func main() {
+	// Seed the random number generator
+	rand.Seed(time.Now().UnixNano())
+
 	// Open a file to save the generated data
-	file, err := os.Create("fake_data.csv")
+	file, err := os.Create("fake_data_with_salary.csv")
 	if err != nil {
 		fmt.Println("Error creating file:", err)
 		return
@@ -33,7 +40,7 @@ func main() {
 	defer writer.Flush()
 
 	// Write header row to the CSV file
-	headers := []string{"Name", "Email", "Phone"}
+	headers := []string{"Name", "Email", "Phone", "Salary"}
 	if err := writer.Write(headers); err != nil {
 		fmt.Println("Error writing headers:", err)
 		return
@@ -48,8 +55,11 @@ func main() {
 			return
 		}
 
+		// Generate a random salary between 30,000 and 150,000
+		user.Salary = rand.Intn(120001) + 30000
+
 		// Write user data to the CSV file
-		row := []string{user.Name, user.Email, user.Phone}
+		row := []string{user.Name, user.Email, user.Phone, fmt.Sprintf("%d", user.Salary)}
 		if err := writer.Write(row); err != nil {
 			fmt.Println("Error writing row:", err)
 			return
@@ -61,7 +71,7 @@ func main() {
 		}
 	}
 
-	fmt.Println("Fake data generation completed. File saved as 'fake_data.csv'.")
+	fmt.Println("Fake data generation completed. File saved as 'fake_data_with_salary.csv'.")
 }
 ```
 
