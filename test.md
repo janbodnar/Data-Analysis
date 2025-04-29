@@ -1,5 +1,44 @@
 # Priklady
 
+
+## Async screenshots
+
+```python
+import asyncio
+from playwright.async_api import async_playwright
+
+async def take_screenshot(url, output_file):
+    async with async_playwright() as p:
+        browser = await p.chromium.launch()
+        page = await browser.new_page()
+        try:
+            await page.goto(url, wait_until="networkidle")
+            await page.screenshot(path=output_file, full_page=True)
+            print(f"Screenshot saved: {output_file}")
+        except Exception as e:
+            print(f"Error processing {url}: {e}")
+        finally:
+            await browser.close()
+
+async def main():
+    # List of URLs to capture
+    pages = [
+        {"url": "https://example.com", "output": "example_com.png"},
+        {"url": "https://python.org", "output": "python_org.png"},
+        {"url": "https://github.com", "output": "github_com.png"}
+    ]
+    
+    # Create tasks for each screenshot
+    tasks = [take_screenshot(page["url"], page["output"]) for page in pages]
+    
+    # Run all tasks concurrently
+    await asyncio.gather(*tasks)
+
+if __name__ == "__main__":
+    asyncio.run(main())
+```
+
+
 ## read with Go
 
 ```go
