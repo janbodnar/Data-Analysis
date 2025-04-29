@@ -1,5 +1,78 @@
 # Priklady
 
+## Benchmark
+
+```python
+#!/usr/bin/python
+
+import httpx
+import asyncio
+import time
+from typing import List
+
+# URLs to fetch
+urls = [
+    "http://webcode.me",
+    "https://httpbin.org/get",
+    "https://google.com",
+    "https://stackoverflow.com",
+    "https://github.com",
+]
+
+# Asynchronous version
+async def get_async(url: str) -> httpx.Response:
+    async with httpx.AsyncClient() as client:
+        return await client.get(url)
+
+async def fetch_async() -> List[int]:
+    resps = await asyncio.gather(*map(get_async, urls))
+    return [resp.status_code for resp in resps]
+
+# Synchronous version
+def get_sync(url: str) -> httpx.Response:
+    with httpx.Client() as client:
+        return client.get(url)
+
+def fetch_sync() -> List[int]:
+    return [get_sync(url).status_code for url in urls]
+
+# Benchmarking function
+def benchmark():
+    print("Running benchmarks...\n")
+
+    # Benchmark synchronous version
+    start_time = time.time()
+    sync_status_codes = fetch_sync()
+    sync_duration = time.time() - start_time
+    print("Synchronous Results:")
+    for url, status_code in zip(urls, sync_status_codes):
+        print(f"{url}: {status_code}")
+    print(f"Synchronous Duration: {sync_duration:.2f} seconds\n")
+
+    # Benchmark asynchronous version
+    start_time = time.time()
+    async_status_codes = asyncio.run(fetch_async())
+    async_duration = time.time() - start_time
+    print("Asynchronous Results:")
+    for url, status_code in zip(urls, async_status_codes):
+        print(f"{url}: {status_code}")
+    print(f"Asynchronous Duration: {async_duration:.2f} seconds\n")
+
+    # Summary
+    print("Benchmark Summary:")
+    print(f"Synchronous: {sync_duration:.2f} seconds")
+    print(f"Asynchronous: {async_duration:.2f} seconds")
+    print(
+        f"Asynchronous is {((sync_duration - async_duration) / sync_duration * 100):.2f}% faster"
+        if sync_duration > async_duration
+        else f"Synchronous is {((async_duration - sync_duration) / async_duration * 100):.2f}% faster"
+    )
+
+if __name__ == "__main__":
+    benchmark()
+```
+
+
 ## Async requests
 
 ```python
